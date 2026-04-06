@@ -22,3 +22,10 @@ func start_encounter():
     print("Encontro iniciado com: ", youkai_data.name)
     get_tree().change_scene_to_file("res://scenes/battle.tscn")
 
+func _ready():
+    $Area3D.body_entered.connect(_on_body_entered)
+
+    if youkai_data == null:
+        youkai_data = YoukaiManager.youkais.pick_random()
+
+    print("Ghost recebeu: ", youkai_data.name)
