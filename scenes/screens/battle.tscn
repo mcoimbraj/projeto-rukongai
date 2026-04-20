@@ -1,0 +1,32 @@
+[gd_scene format=3 uid="uid://j82k1v6fmmyd"]
+
+[ext_resource type="Script" uid="uid://cdgde517fxkpq" path="res://scripts/screens/battle/battle.gd" id="1_kvrgq"]
+
+[node name="battle" type="Node2D" unique_id=472780246]
+script = ExtResource("1_kvrgq")
+
+[node name="YoukaiName" type="Label" parent="." unique_id=745357871]
+offset_right = 40.0
+offset_bottom = 23.0
+
+[node name="PlayerHP" type="Label" parent="." unique_id=1245490029]
+offset_left = 146.0
+offset_top = 57.0
+offset_right = 186.0
+offset_bottom = 80.0
+
+[node name="EnemyHP" type="Label" parent="." unique_id=1983380164]
+offset_left = 6.0
+offset_top = 18.0
+offset_right = 46.0
+offset_bottom = 41.0
+
+[node name="BtnAtacar" type="Button" parent="." unique_id=1744098744]
+offset_right = 8.0
+offset_bottom = 8.0
+
+[node name="BtnFugir" type="Button" parent="." unique_id=139513407]
+offset_left = 38.0
+offset_top = -1.0
+offset_right = 46.0
+offset_bottom = 7.0

@@ -2,15 +2,17 @@ extends Node3D
 
 @export var youkai_data: Youkai
 
-var triggered := false  # evita repetir o evento
+var triggered := false
 
 func _ready():
-	# conecta o sinal da área
-	$Area3D.body_entered.connect(_on_body_entered)
-	if youkai_data == null:
-		youkai_data = YoukaiManager.youkais.pick_random()
+	# evita conectar duas vezes (bug comum)
+	if not $Area3D.body_entered.is_connected(_on_body_entered):
+		$Area3D.body_entered.connect(_on_body_entered)
 
-	print("Ghost recebeu: ", youkai_data.name)
+	if youkai_data == null:
+		youkai_data = YoukaiManager.get_random_youkai()
+
+	print("Ghost recebeu:", youkai_data.name)
 
 func _on_body_entered(body):
 	if triggered:
@@ -21,5 +23,30 @@ func _on_body_entered(body):
 		start_encounter()
 
 func start_encounter():
-	print("Encontro iniciado com: ", youkai_data.name)
-	get_tree().change_scene_to_file("res://scenes/battle.tscn")
+	print("Encontro iniciado com:", youkai_data.name)
+
+	# 🔥 PAUSA O JOGO
+	get_tree().paused = true
+
+	# 🔥 instancia batalha
+	var battle = load("res://scenes/battle.tscn").instantiate()
+	battle.set_youkai(youkai_data)
+
+	# 🔥 adiciona na tela
+	get_tree().root.add_child(battle)
+
+	# 🔥 conecta fim da batalha
+	battle.tree_exited.connect(_on_battle_finished)
+
+	# (opcional) esconde o ghost
+	visible = false
+
+
+func _on_battle_finished():
+	print("Batalha terminou")
+
+	# 🔥 DESPAUSA O JOGO
+	get_tree().paused = false
+
+	# 🔥 remove o ghost definitivamente
+	queue_free()

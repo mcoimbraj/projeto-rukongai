@@ -69,23 +69,28 @@ func handle_mobile(delta):
 	var accel = Input.get_accelerometer()
 	var gyro = Input.get_gyroscope()
 
-	# 🔄 ROTAÇÃO (olhar)
+	# 🔥 DEBUG: se estiver no PC, simula input
+	if accel == Vector3.ZERO:
+		accel.x = Input.get_action_strength("move_right") - Input.get_action_strength("move_left")
+		accel.y = Input.get_action_strength("move_forward") - Input.get_action_strength("move_backward")
+
+	if gyro == Vector3.ZERO:
+		gyro.y = Input.get_action_strength("move_right") - Input.get_action_strength("move_left")
+		gyro.x = Input.get_action_strength("move_backward") - Input.get_action_strength("move_forward")
+
+	# 🔄 ROTAÇÃO
 	rotate_y(-gyro.y * mobile_sensitivity)
 
 	rotation_x -= gyro.x * mobile_sensitivity
 	rotation_x = clamp(rotation_x, -1.2, 1.2)
 	$Camera3D.rotation.x = rotation_x
 
-	# 🚶 MOVIMENTO (inclinação)
+	# 🚶 MOVIMENTO
 	var forward = -transform.basis.z
 	var right = transform.basis.x
 
 	var direction = Vector3.ZERO
-
-	# Inclinar para frente/trás
 	direction += forward * accel.y * tilt_strength
-
-	# Inclinar para os lados
 	direction += right * accel.x * tilt_strength
 
 	direction = direction.normalized()
