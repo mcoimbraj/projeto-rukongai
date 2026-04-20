@@ -1,5 +1,7 @@
 [gd_scene format=3 uid="uid://bbwc411qmrl4g"]
 
+[ext_resource type="Script" uid="uid://qre4dh5bow1k" path="res://scripts/ghost/ghost.gd" id="1_gf5mu"]
+
 [sub_resource type="SphereMesh" id="SphereMesh_jlo78"]
 
 [sub_resource type="SphereShape3D" id="SphereShape3D_jlo78"]
@@ -8,6 +10,7 @@
 radius = 2.0
 
 [node name="Ghost" type="Node3D" unique_id=1691179552]
+script = ExtResource("1_gf5mu")
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="." unique_id=1789900121]
 mesh = SubResource("SphereMesh_jlo78")
