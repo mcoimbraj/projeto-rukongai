@@ -1,4 +1,4 @@
-```markdown
+
 # 📘 Projeto: Rukongai
 **Aluno:** Milton Coimbra Júnior  
 **Disciplina:** Projeto de Software  
@@ -361,7 +361,3 @@ Rukongai propõe uma experiência diferenciada ao unir:
 
 O projeto ainda está em fase inicial, mas já apresenta uma base sólida para evolução.
 
----
-
-```
-```
