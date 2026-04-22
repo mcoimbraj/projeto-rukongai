@@ -6,7 +6,7 @@ class_name Youkai
 # =========================
 @export var name: String
 @export var description: String
-@export var abilities: Array[String]
+@export var abilities: Array
 @export var natureza: String
 
 # =========================
