@@ -1,24 +1,42 @@
 extends CharacterBody3D
 
-@export var speed := 5.0
+# =========================
+# CONFIG
+# =========================
+@export var speed := 6.0
 @export var mouse_sensitivity := 0.002
 @export var mobile_sensitivity := 3.0
-@export var tilt_strength := 10.0
 
+# Step system
+@export var step_threshold := 1.2
+@export var step_cooldown := 0.3
+@export var step_force := 8.0
+@export var friction := 10.0
+
+# =========================
+# VARIÁVEIS
+# =========================
 var rotation_x := 0.0
 
+# Step detection
+var last_step_time := 0.0
+var prev_magnitude := 0.0
+
+# =========================
+# READY
+# =========================
 func _ready():
-	if not OS.has_feature("mobile"):
+	if OS.get_name() != "Android":
 		Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
 
 	$Camera3D.current = true
 
 
 # =========================
-# CONTROLE DE CÂMERA (PC)
+# INPUT (PC)
 # =========================
 func _input(event):
-	if OS.has_feature("mobile"):
+	if OS.get_name() == "Android":
 		return
 
 	if event is InputEventMouseMotion:
@@ -30,19 +48,22 @@ func _input(event):
 
 
 # =========================
-# MOVIMENTO
+# LOOP PRINCIPAL
 # =========================
 func _physics_process(delta):
-	if OS.has_feature("mobile"):
+	if OS.get_name() == "Android":
 		handle_mobile(delta)
 	else:
 		handle_pc(delta)
+
+	# freio natural (evita "sabão")
+	velocity = velocity.move_toward(Vector3.ZERO, friction * delta)
 
 	move_and_slide()
 
 
 # =========================
-# PC (WASD)
+# PC MOVEMENT
 # =========================
 func handle_pc(delta):
 	var direction = Vector3.ZERO
@@ -58,42 +79,57 @@ func handle_pc(delta):
 
 	direction = direction.normalized()
 
-	velocity.x = direction.x * speed
-	velocity.z = direction.z * speed
+	if direction != Vector3.ZERO:
+		velocity = direction * speed
 
 
 # =========================
-# MOBILE (SENSORES)
+# MOBILE (PASSOS REAIS)
 # =========================
 func handle_mobile(delta):
 	var accel = Input.get_accelerometer()
 	var gyro = Input.get_gyroscope()
 
-	# 🔥 DEBUG: se estiver no PC, simula input
-	if accel == Vector3.ZERO:
-		accel.x = Input.get_action_strength("move_right") - Input.get_action_strength("move_left")
-		accel.y = Input.get_action_strength("move_forward") - Input.get_action_strength("move_backward")
-
-	if gyro == Vector3.ZERO:
-		gyro.y = Input.get_action_strength("move_right") - Input.get_action_strength("move_left")
-		gyro.x = Input.get_action_strength("move_backward") - Input.get_action_strength("move_forward")
-
-	# 🔄 ROTAÇÃO
+	# =========================
+	# ROTAÇÃO (GIROSCÓPIO)
+	# =========================
 	rotate_y(-gyro.y * mobile_sensitivity)
 
 	rotation_x -= gyro.x * mobile_sensitivity
 	rotation_x = clamp(rotation_x, -1.2, 1.2)
 	$Camera3D.rotation.x = rotation_x
 
-	# 🚶 MOVIMENTO
+	# =========================
+	# DETECTA PASSO
+	# =========================
+	if detect_step(accel):
+		move_step()
+
+
+# =========================
+# DETECÇÃO DE PASSO
+# =========================
+func detect_step(accel: Vector3) -> bool:
+	var magnitude = accel.length()
+
+	var delta = magnitude - prev_magnitude
+	prev_magnitude = magnitude
+
+	var now = Time.get_ticks_msec() / 1000.0
+
+	# Detecta pico
+	if delta > step_threshold and (now - last_step_time) > step_cooldown:
+		last_step_time = now
+		return true
+
+	return false
+
+
+# =========================
+# MOVIMENTO POR PASSO
+# =========================
+func move_step():
 	var forward = -transform.basis.z
-	var right = transform.basis.x
 
-	var direction = Vector3.ZERO
-	direction += forward * accel.y * tilt_strength
-	direction += right * accel.x * tilt_strength
-
-	direction = direction.normalized()
-
-	velocity.x = direction.x * speed
-	velocity.z = direction.z * speed
+	# impulso de movimento
+	velocity = forward * step_force

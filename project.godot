@@ -19,6 +19,10 @@ config/icon="res://icon.svg"
 
 YoukaiManager="*uid://t0rmmeb5j52d"
 
+[display]
+
+window/handheld/orientation=1
+
 [global_group]
 
 player="O player e suas propriedades"
@@ -46,6 +50,13 @@ move_backward={
 ]
 }
 
+[input_devices]
+
+sensors/enable_accelerometer=true
+sensors/enable_gravity=true
+sensors/enable_gyroscope=true
+sensors/enable_magnetometer=true
+
 [physics]
 
 3d/physics_engine="Jolt Physics"
@@ -53,3 +64,4 @@ move_backward={
 [rendering]
 
 rendering_device/driver.windows="d3d12"
+textures/vram_compression/import_etc2_astc=true
