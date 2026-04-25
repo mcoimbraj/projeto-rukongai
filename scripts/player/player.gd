@@ -5,22 +5,30 @@ extends CharacterBody3D
 # =========================
 @export var speed := 6.0
 @export var mouse_sensitivity := 0.002
-@export var mobile_sensitivity := 3.0
+@export var mobile_sensitivity := 2.0
 
 # Step system
-@export var step_threshold := 1.2
-@export var step_cooldown := 0.3
-@export var step_force := 8.0
-@export var friction := 10.0
+@export var step_threshold := 2.5   # 🔥 ajuste para calibrar a sensibilidade do passo (depende do dispositivo)
+@export var step_cooldown := 0.4
+@export var step_force := 6.0
+@export var friction := 12.0
+
+# Sensor filtering
+@export var accel_smoothing := 0.1
+@export var gyro_smoothing := 0.1
+@export var deadzone := 0.15   # 🔥 ajuste para ignorar ruídos pequenos (depende do dispositivo)
 
 # =========================
 # VARIÁVEIS
 # =========================
 var rotation_x := 0.0
 
-# Step detection
 var last_step_time := 0.0
 var prev_magnitude := 0.0
+
+# sensores filtrados
+var smooth_accel := Vector3.ZERO
+var smooth_gyro := Vector3.ZERO
 
 # =========================
 # READY
@@ -33,22 +41,7 @@ func _ready():
 
 
 # =========================
-# INPUT (PC)
-# =========================
-func _input(event):
-	if OS.get_name() == "Android":
-		return
-
-	if event is InputEventMouseMotion:
-		rotate_y(-event.relative.x * mouse_sensitivity)
-
-		rotation_x -= event.relative.y * mouse_sensitivity
-		rotation_x = clamp(rotation_x, -1.5, 1.5)
-		$Camera3D.rotation.x = rotation_x
-
-
-# =========================
-# LOOP PRINCIPAL
+# LOOP
 # =========================
 func _physics_process(delta):
 	if OS.get_name() == "Android":
@@ -56,14 +49,14 @@ func _physics_process(delta):
 	else:
 		handle_pc(delta)
 
-	# freio natural (evita "sabão")
+	# freio natural
 	velocity = velocity.move_toward(Vector3.ZERO, friction * delta)
 
 	move_and_slide()
 
 
 # =========================
-# PC MOVEMENT
+# PC
 # =========================
 func handle_pc(delta):
 	var direction = Vector3.ZERO
@@ -77,37 +70,50 @@ func handle_pc(delta):
 	if Input.is_action_pressed("move_right"):
 		direction += transform.basis.x
 
-	direction = direction.normalized()
-
 	if direction != Vector3.ZERO:
-		velocity = direction * speed
+		velocity = direction.normalized() * speed
 
 
 # =========================
-# MOBILE (PASSOS REAIS)
+# MOBILE
 # =========================
 func handle_mobile(delta):
-	var accel = Input.get_accelerometer()
-	var gyro = Input.get_gyroscope()
+	var raw_accel = Input.get_accelerometer()
+	var raw_gyro = Input.get_gyroscope()
 
 	# =========================
-	# ROTAÇÃO (GIROSCÓPIO)
+	# FILTRO (LOW PASS)
 	# =========================
-	rotate_y(-gyro.y * mobile_sensitivity)
-
-	rotation_x -= gyro.x * mobile_sensitivity
-	rotation_x = clamp(rotation_x, -1.2, 1.2)
-	$Camera3D.rotation.x = rotation_x
+	smooth_accel = smooth_accel.lerp(raw_accel, accel_smoothing)
+	smooth_gyro = smooth_gyro.lerp(raw_gyro, gyro_smoothing)
 
 	# =========================
-	# DETECTA PASSO
+	# DEADZONE
 	# =========================
-	if detect_step(accel):
+	if abs(smooth_gyro.x) < deadzone:
+		smooth_gyro.x = 0
+	if abs(smooth_gyro.y) < deadzone:
+		smooth_gyro.y = 0
+
+	# =========================
+	# ROTAÇÃO (CONTROLADA)
+	# =========================
+	if smooth_gyro.length() > 0:
+		rotate_y(-smooth_gyro.y * mobile_sensitivity)
+
+		rotation_x -= smooth_gyro.x * mobile_sensitivity
+		rotation_x = clamp(rotation_x, -1.2, 1.2)
+		$Camera3D.rotation.x = rotation_x
+
+	# =========================
+	# PASSO REAL
+	# =========================
+	if detect_step(smooth_accel):
 		move_step()
 
 
 # =========================
-# DETECÇÃO DE PASSO
+# DETECÇÃO DE PASSO (ROBUSTA)
 # =========================
 func detect_step(accel: Vector3) -> bool:
 	var magnitude = accel.length()
@@ -117,9 +123,14 @@ func detect_step(accel: Vector3) -> bool:
 
 	var now = Time.get_ticks_msec() / 1000.0
 
-	# Detecta pico
+	# 🔥 ignora micro variações
+	if abs(delta) < 0.2:
+		return false
+
+	# 🔥 detecta pico real
 	if delta > step_threshold and (now - last_step_time) > step_cooldown:
 		last_step_time = now
+		print("👣 PASSO DETECTADO")
 		return true
 
 	return false
@@ -131,5 +142,4 @@ func detect_step(accel: Vector3) -> bool:
 func move_step():
 	var forward = -transform.basis.z
 
-	# impulso de movimento
 	velocity = forward * step_force
