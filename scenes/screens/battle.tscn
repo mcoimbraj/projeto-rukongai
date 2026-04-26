@@ -6,34 +6,3 @@
 layout_mode = 3
 anchors_preset = 0
 script = ExtResource("1_kvrgq")
-
-[node name="YoukaiName" type="Label" parent="." unique_id=745357871]
-layout_mode = 0
-offset_right = 40.0
-offset_bottom = 23.0
-
-[node name="PlayerHP" type="Label" parent="." unique_id=1245490029]
-layout_mode = 0
-offset_left = 146.0
-offset_top = 57.0
-offset_right = 186.0
-offset_bottom = 80.0
-
-[node name="EnemyHP" type="Label" parent="." unique_id=1983380164]
-layout_mode = 0
-offset_left = 6.0
-offset_top = 18.0
-offset_right = 46.0
-offset_bottom = 41.0
-
-[node name="BtnAtacar" type="Button" parent="." unique_id=1744098744]
-layout_mode = 0
-offset_right = 8.0
-offset_bottom = 8.0
-
-[node name="BtnFugir" type="Button" parent="." unique_id=139513407]
-layout_mode = 0
-offset_left = 38.0
-offset_top = -1.0
-offset_right = 46.0
-offset_bottom = 7.0
