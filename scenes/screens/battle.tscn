@@ -4,7 +4,7 @@
 
 [sub_resource type="LabelSettings" id="LabelSettings_kvrgq"]
 
-[node name="battle" type="Control"]
+[node name="battle" type="Control" unique_id=982033021]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -13,7 +13,7 @@ grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_kvrgq")
 
-[node name="bg" type="ColorRect" parent="."]
+[node name="bg" type="ColorRect" parent="." unique_id=1785240941]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -22,7 +22,7 @@ grow_horizontal = 2
 grow_vertical = 2
 color = Color(0, 0, 0, 0.8)
 
-[node name="CenterContainer" type="CenterContainer" parent="."]
+[node name="CenterContainer" type="CenterContainer" parent="." unique_id=1332528066]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -30,76 +30,90 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="MarginContainer" type="MarginContainer" parent="CenterContainer"]
+[node name="MarginContainer" type="MarginContainer" parent="CenterContainer" unique_id=1018416842]
 layout_mode = 2
 theme_override_constants/margin_left = 40
-theme_override_constants/margin_right = 40
 theme_override_constants/margin_top = 40
+theme_override_constants/margin_right = 40
 theme_override_constants/margin_bottom = 40
 
-[node name="PanelContainer" type="PanelContainer" parent="CenterContainer/MarginContainer"]
+[node name="PanelContainer" type="PanelContainer" parent="CenterContainer/MarginContainer" unique_id=1920090834]
 layout_mode = 2
 
-[node name="VBoxContainer" type="VBoxContainer" parent="CenterContainer/MarginContainer/PanelContainer"]
+[node name="VBoxContainer" type="VBoxContainer" parent="CenterContainer/MarginContainer/PanelContainer" unique_id=977467320]
 layout_mode = 2
+theme_override_constants/separation = 8
+alignment = 1
 
-[node name="lbl_name" type="Label" parent="CenterContainer/MarginContainer/PanelContainer/VBoxContainer"]
+[node name="lbl_name" type="Label" parent="CenterContainer/MarginContainer/PanelContainer/VBoxContainer" unique_id=1035768828]
 layout_mode = 2
 theme_override_font_sizes/font_size = 28
 label_settings = SubResource("LabelSettings_kvrgq")
 horizontal_alignment = 1
 
-[node name="HSeparator" type="HSeparator" parent="CenterContainer/MarginContainer/PanelContainer/VBoxContainer"]
-
-[node name="hp_box" type="HBoxContainer" parent="CenterContainer/MarginContainer/PanelContainer/VBoxContainer"]
+[node name="HSeparator" type="HSeparator" parent="CenterContainer/MarginContainer/PanelContainer/VBoxContainer" unique_id=1363736294]
 layout_mode = 2
-theme_override_constants/separation = 20
 
-[node name="player" type="VBoxContainer" parent="CenterContainer/MarginContainer/PanelContainer/VBoxContainer/hp_box"]
+[node name="hp_box" type="HBoxContainer" parent="CenterContainer/MarginContainer/PanelContainer/VBoxContainer" unique_id=1518715914]
+layout_mode = 2
+theme_override_constants/separation = 40
+
+[node name="player" type="VBoxContainer" parent="CenterContainer/MarginContainer/PanelContainer/VBoxContainer/hp_box" unique_id=642774494]
 layout_mode = 2
 size_flags_horizontal = 3
 
-[node name="p_label" type="Label" parent="CenterContainer/MarginContainer/PanelContainer/VBoxContainer/hp_box/player"]
+[node name="p_label" type="Label" parent="CenterContainer/MarginContainer/PanelContainer/VBoxContainer/hp_box/player" unique_id=24184862]
+layout_mode = 2
 text = "Você"
 
-[node name="player_hp" type="ProgressBar" parent="CenterContainer/MarginContainer/PanelContainer/VBoxContainer/hp_box/player"]
+[node name="player_hp" type="ProgressBar" parent="CenterContainer/MarginContainer/PanelContainer/VBoxContainer/hp_box/player" unique_id=869262450]
+layout_mode = 2
 
-[node name="enemy" type="VBoxContainer" parent="CenterContainer/MarginContainer/PanelContainer/VBoxContainer/hp_box"]
+[node name="enemy" type="VBoxContainer" parent="CenterContainer/MarginContainer/PanelContainer/VBoxContainer/hp_box" unique_id=2082389054]
 layout_mode = 2
 size_flags_horizontal = 3
 
-[node name="e_label" type="Label" parent="CenterContainer/MarginContainer/PanelContainer/VBoxContainer/hp_box/enemy"]
+[node name="e_label" type="Label" parent="CenterContainer/MarginContainer/PanelContainer/VBoxContainer/hp_box/enemy" unique_id=375087935]
+layout_mode = 2
 text = "Inimigo"
 
-[node name="enemy_hp" type="ProgressBar" parent="CenterContainer/MarginContainer/PanelContainer/VBoxContainer/hp_box/enemy"]
-
-[node name="HSeparator2" type="HSeparator" parent="CenterContainer/MarginContainer/PanelContainer/VBoxContainer"]
-
-[node name="buttons" type="GridContainer" parent="CenterContainer/MarginContainer/PanelContainer/VBoxContainer"]
+[node name="enemy_hp" type="ProgressBar" parent="CenterContainer/MarginContainer/PanelContainer/VBoxContainer/hp_box/enemy" unique_id=677492779]
 layout_mode = 2
+
+[node name="HSeparator2" type="HSeparator" parent="CenterContainer/MarginContainer/PanelContainer/VBoxContainer" unique_id=714446605]
+layout_mode = 2
+
+[node name="buttons" type="GridContainer" parent="CenterContainer/MarginContainer/PanelContainer/VBoxContainer" unique_id=420002556]
+layout_mode = 2
+theme_override_constants/h_separation = 8
+theme_override_constants/v_separation = 8
 columns = 2
 
-[node name="btn_attack" type="Button" parent="CenterContainer/MarginContainer/PanelContainer/VBoxContainer/buttons"]
+[node name="btn_attack" type="Button" parent="CenterContainer/MarginContainer/PanelContainer/VBoxContainer/buttons" unique_id=330498246]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
 text = "⚔️ Atacar"
+
+[node name="btn_negotiate" type="Button" parent="CenterContainer/MarginContainer/PanelContainer/VBoxContainer/buttons" unique_id=333202979]
+layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
-
-[node name="btn_negotiate" type="Button" parent="CenterContainer/MarginContainer/PanelContainer/VBoxContainer/buttons"]
 text = "🤝 Negociar"
+
+[node name="btn_items" type="Button" parent="CenterContainer/MarginContainer/PanelContainer/VBoxContainer/buttons" unique_id=10344432]
+layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
-
-[node name="btn_items" type="Button" parent="CenterContainer/MarginContainer/PanelContainer/VBoxContainer/buttons"]
 text = "🎒 Itens"
+
+[node name="btn_flee" type="Button" parent="CenterContainer/MarginContainer/PanelContainer/VBoxContainer/buttons" unique_id=1134460489]
+layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
-
-[node name="btn_flee" type="Button" parent="CenterContainer/MarginContainer/PanelContainer/VBoxContainer/buttons"]
 text = "🏃 Fugir"
-size_flags_horizontal = 3
-size_flags_vertical = 3
 
-[node name="msg_label" type="Label" parent="CenterContainer/MarginContainer/PanelContainer/VBoxContainer"]
+[node name="msg_label" type="Label" parent="CenterContainer/MarginContainer/PanelContainer/VBoxContainer" unique_id=1245564149]
 layout_mode = 2
 horizontal_alignment = 1
 
