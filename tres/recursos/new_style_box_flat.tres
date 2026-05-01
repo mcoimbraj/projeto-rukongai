@@ -1,0 +1,10 @@
+[gd_resource type="StyleBoxFlat" format=3 uid="uid://crbypcgralbja"]
+
+[resource]
+bg_color = Color(0.105882354, 0.105882354, 0.105882354, 1)
+border_width_bottom = 8
+border_color = Color(0.0627451, 0.0627451, 0.0627451, 1)
+corner_radius_top_left = 10
+corner_radius_top_right = 10
+corner_radius_bottom_right = 10
+corner_radius_bottom_left = 10

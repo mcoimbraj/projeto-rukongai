@@ -144,7 +144,7 @@ func handle_mobile(delta):
 	# =========================
 	# ROTAÇÃO VERTICAL (🔥 multiplicado por delta)
 	# =========================
-	if abs(response_x) > 0.05:
+	if abs(response_x) > 0.07:
 		target_rotation_x -= response_x * vertical_sensitivity * delta
 		target_rotation_x = clamp(target_rotation_x, -1.2, 1.2)
 

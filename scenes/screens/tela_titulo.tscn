@@ -1,5 +1,25 @@
 [gd_scene format=3 uid="uid://bwqof1x0ytdm7"]
 
+[ext_resource type="FontFile" uid="uid://sxooo8o3tyye" path="res://Qetod.ttf" id="1_sdjo8"]
+[ext_resource type="StyleBox" uid="uid://crbypcgralbja" path="res://tres/recursos/new_style_box_flat.tres" id="2_kp1np"]
+
+[sub_resource type="LabelSettings" id="LabelSettings_kp1np"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_alfu1"]
+bg_color = Color(0.105882354, 0.105882354, 0.105882354, 1)
+border_width_top = 8
+border_color = Color(0.07, 0.07, 0.07, 0.13333334)
+corner_radius_top_left = 10
+corner_radius_top_right = 10
+corner_radius_bottom_right = 10
+corner_radius_bottom_left = 10
+
+[sub_resource type="Theme" id="Theme_alfu1"]
+Button/styles/disabled = null
+Button/styles/hover = ExtResource("2_kp1np")
+Button/styles/normal = ExtResource("2_kp1np")
+Button/styles/pressed = SubResource("StyleBoxFlat_alfu1")
+
 [node name="TelaTitulo" type="Control" unique_id=851853340]
 layout_mode = 3
 anchors_preset = 15
@@ -9,37 +29,75 @@ grow_horizontal = 2
 grow_vertical = 2
 
 [node name="fundo" type="ColorRect" parent="." unique_id=1206644000]
-layout_mode = 0
-offset_left = 13.0
-offset_top = 17.0
-offset_right = 307.0
-offset_bottom = 57.0
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 1)
 
 [node name="CenterContainer" type="CenterContainer" parent="." unique_id=1147360900]
-layout_mode = 0
-offset_right = 40.0
-offset_bottom = 40.0
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+rotation = 0.00038992224
 
-[node name="VBoxContainer" type="VBoxContainer" parent="CenterContainer" unique_id=375486463]
+[node name="CenterContainer" type="CenterContainer" parent="CenterContainer" unique_id=1283257355]
 layout_mode = 2
 
-[node name="logo" type="TextureRect" parent="CenterContainer/VBoxContainer" unique_id=83261956]
+[node name="VBoxContainer" type="VBoxContainer" parent="CenterContainer/CenterContainer" unique_id=375486463]
+custom_minimum_size = Vector2(650, 500)
 layout_mode = 2
+theme_override_constants/separation = 120
+alignment = 1
 
-[node name="Label" type="Label" parent="CenterContainer/VBoxContainer" unique_id=233948100]
+[node name="HBoxContainer" type="HBoxContainer" parent="CenterContainer/CenterContainer/VBoxContainer" unique_id=1233928591]
+custom_minimum_size = Vector2(200, 200)
 layout_mode = 2
+size_flags_vertical = 0
+alignment = 1
 
-[node name="botoes" type="VBoxContainer" parent="CenterContainer" unique_id=1174828579]
+[node name="logo" type="TextureRect" parent="CenterContainer/CenterContainer/VBoxContainer/HBoxContainer" unique_id=83261956]
 layout_mode = 2
+size_flags_vertical = 0
 
-[node name="start" type="Button" parent="CenterContainer/botoes" unique_id=1855675787]
+[node name="Label" type="Label" parent="CenterContainer/CenterContainer/VBoxContainer/HBoxContainer" unique_id=233948100]
+custom_minimum_size = Vector2(400, 400)
 layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 0
+theme_override_fonts/font = ExtResource("1_sdjo8")
+theme_override_font_sizes/font_size = 320
+text = "Rukongai"
+label_settings = SubResource("LabelSettings_kp1np")
+horizontal_alignment = 1
 
-[node name="opcoes" type="Button" parent="CenterContainer/botoes" unique_id=510502148]
+[node name="botoes" type="VBoxContainer" parent="CenterContainer/CenterContainer/VBoxContainer" unique_id=1174828579]
+custom_minimum_size = Vector2(500, 200)
 layout_mode = 2
+theme = SubResource("Theme_alfu1")
+alignment = 1
 
-[node name="creditos" type="Button" parent="CenterContainer/botoes" unique_id=174607398]
+[node name="start" type="Button" parent="CenterContainer/CenterContainer/VBoxContainer/botoes" unique_id=1855675787]
 layout_mode = 2
+theme_override_font_sizes/font_size = 25
+text = "Começar"
 
-[node name="sair" type="Button" parent="CenterContainer/botoes" unique_id=790429489]
+[node name="opcoes" type="Button" parent="CenterContainer/CenterContainer/VBoxContainer/botoes" unique_id=510502148]
 layout_mode = 2
+theme_override_font_sizes/font_size = 25
+text = "Opções"
+
+[node name="creditos" type="Button" parent="CenterContainer/CenterContainer/VBoxContainer/botoes" unique_id=174607398]
+layout_mode = 2
+theme_override_font_sizes/font_size = 25
+text = "Créditos"
+
+[node name="sair" type="Button" parent="CenterContainer/CenterContainer/VBoxContainer/botoes" unique_id=790429489]
+layout_mode = 2
+theme_override_font_sizes/font_size = 25
+text = "Sair"

@@ -20,7 +20,7 @@ fog_density = 0.05
 shape = SubResource("BoxShape3D_vom5j")
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="StaticBody3D" unique_id=1743954037]
-transform = Transform3D(30, 0, 0, 0, 30, 0, 0, 0, 30, 0, 0, 0)
+transform = Transform3D(50, 0, 0, 0, 50, 0, 0, 0, 50, 0, 0, 0)
 mesh = SubResource("PlaneMesh_hyk8p")
 
 [node name="YoukaiSpawner" type="Node3D" parent="." unique_id=854957675]
@@ -33,3 +33,6 @@ floor_path = NodePath("../StaticBody3D")
 environment = SubResource("Environment_hyk8p")
 
 [node name="Player" parent="." unique_id=1271632815 groups=["player"] instance=ExtResource("2_iuonh")]
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="Player" unique_id=1643757863]
+sky_mode = 1
