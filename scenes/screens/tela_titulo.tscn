@@ -75,33 +75,31 @@ text = "Rukongai"
 label_settings = SubResource("LabelSettings_kp1np")
 horizontal_alignment = 1
 
-[node name="Label2" type="Label" parent="CenterContainer/CenterContainer/VBoxContainer/VBoxContainer" unique_id=1878066234]
+[node name="GridContainer" type="GridContainer" parent="CenterContainer/CenterContainer/VBoxContainer/VBoxContainer" unique_id=107612095]
+layout_mode = 2
+columns = 2
+
+[node name="logo" type="TextureRect" parent="CenterContainer/CenterContainer/VBoxContainer/VBoxContainer/GridContainer" unique_id=570609585]
+z_index = 1
+custom_minimum_size = Vector2(200, 50)
+layout_direction = 2
+layout_mode = 2
+size_flags_horizontal = 6
+size_flags_vertical = 0
+texture = ExtResource("1_oah2h")
+expand_mode = 5
+stretch_mode = 4
+
+[node name="Label2" type="Label" parent="CenterContainer/CenterContainer/VBoxContainer/VBoxContainer/GridContainer" unique_id=1878066234]
 z_index = 2
 custom_minimum_size = Vector2(50, 50)
 layout_mode = 2
 size_flags_horizontal = 10
-size_flags_vertical = 0
+size_flags_vertical = 2
 theme_override_fonts/font = ExtResource("2_oah2h")
 theme_override_font_sizes/font_size = 50
 text = "流 魂 街"
 horizontal_alignment = 1
-
-[node name="MarginContainer" type="MarginContainer" parent="CenterContainer/CenterContainer/VBoxContainer/VBoxContainer" unique_id=2044834275]
-layout_mode = 2
-size_flags_horizontal = 0
-size_flags_vertical = 0
-localize_numeral_system = false
-
-[node name="logo" type="TextureRect" parent="CenterContainer/CenterContainer/VBoxContainer/VBoxContainer/MarginContainer" unique_id=570609585]
-z_index = 1
-custom_minimum_size = Vector2(100, 10)
-layout_direction = 2
-layout_mode = 2
-size_flags_horizontal = 2
-size_flags_vertical = 8
-texture = ExtResource("1_oah2h")
-expand_mode = 5
-stretch_mode = 4
 
 [node name="botoes" type="VBoxContainer" parent="CenterContainer/CenterContainer/VBoxContainer" unique_id=1174828579]
 custom_minimum_size = Vector2(350, 350)
