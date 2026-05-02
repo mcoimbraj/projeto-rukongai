@@ -7,7 +7,7 @@
 [ext_resource type="FontFile" uid="uid://crsmksdurbv2e" path="res://scenes/screens/resource/fonts/Nippon Tech Condensed.otf" id="4_dw1oj"]
 
 [sub_resource type="LabelSettings" id="LabelSettings_kp1np"]
-font_size = 190
+font_size = 210
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_alfu1"]
 bg_color = Color(0.105882354, 0.105882354, 0.105882354, 1)
