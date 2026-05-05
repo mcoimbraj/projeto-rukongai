@@ -14,11 +14,15 @@ var enemy_max_hp := 15
 var player_turn := true
 
 # =========================
-# UI (referências corrigidas)
+# UI
 # =========================
+@onready var player_hp_bar = $CenterContainer/VBoxContainer/player/barras_juntas/player_hp
+@onready var player_hp_bar_lag = $CenterContainer/VBoxContainer/player/barras_juntas/player_hp_lag
 
-@onready var player_hp_bar = $CenterContainer/VBoxContainer/player/player_hp
-@onready var enemy_hp_bar = $CenterContainer/VBoxContainer/enemy/enemy_hp
+@onready var enemy_hp_bar = $CenterContainer/VBoxContainer/enemy/barras_juntas/enemy_hp
+@onready var enemy_hp_lag = $CenterContainer/VBoxContainer/enemy/barras_juntas/enemy_hp_lag
+
+@onready var enemy_label = $CenterContainer/VBoxContainer/enemy/e_label
 
 @onready var btn_attack = $CenterContainer/VBoxContainer/MarginContainer/buttons/btn_attack
 @onready var btn_negotiate = $CenterContainer/VBoxContainer/MarginContainer/buttons/btn_negotiate
@@ -26,8 +30,6 @@ var player_turn := true
 @onready var btn_flee = $CenterContainer/VBoxContainer/MarginContainer/buttons/btn_flee
 
 @onready var msg_label = $CenterContainer/VBoxContainer/msg_label
-
-# (REMOVIDO lbl_name porque não existe na cena)
 
 # =========================
 # RECEBE YOUKAI
@@ -38,35 +40,67 @@ func set_youkai(y):
 	if youkai and "hp" in youkai:
 		enemy_hp = youkai.hp
 		enemy_max_hp = youkai.hp
-	else:
-		enemy_hp = 15
-		enemy_max_hp = 15
 
 # =========================
 # INIT
 # =========================
 func _ready():
-	process_mode = Node.PROCESS_MODE_ALWAYS
+	# 🔴 Remove o "0%" das barras
+	player_hp_bar.show_percentage = false
+	player_hp_bar_lag.show_percentage = false
+	enemy_hp_bar.show_percentage = false
+	enemy_hp_lag.show_percentage = false
 	
+	# 🔴 Garante valores iniciais corretos (ESSENCIAL)
+	player_hp_bar.max_value = player_max_hp
+	player_hp_bar.value = player_hp
+	
+	player_hp_bar_lag.max_value = player_max_hp
+	player_hp_bar_lag.value = player_hp
+	
+	enemy_hp_bar.max_value = enemy_max_hp
+	enemy_hp_bar.value = enemy_hp
+	
+	enemy_hp_lag.max_value = enemy_max_hp
+	enemy_hp_lag.value = enemy_hp
+
 	update_ui()
-	
-	if youkai:
-		print("⚔️ Encontro com:", youkai.name)
-	else:
-		print("⚔️ Encontro com: Desconhecido")
 
 # =========================
 # UPDATE UI
 # =========================
 func update_ui():
-	# segurança contra null (evita crash se mudar UI)
-	if player_hp_bar:
-		player_hp_bar.max_value = player_max_hp
-		player_hp_bar.value = player_hp
-	
-	if enemy_hp_bar:
-		enemy_hp_bar.max_value = enemy_max_hp
-		enemy_hp_bar.value = enemy_hp
+	# Nome dinâmico
+	if enemy_label:
+		enemy_label.text = youkai.name if youkai else "Inimigo"
+
+	# ================= PLAYER =================
+	player_hp_bar.max_value = player_max_hp
+	player_hp_bar_lag.max_value = player_max_hp
+
+	var tween_p = create_tween()
+	tween_p.tween_property(player_hp_bar, "value", player_hp, 0.4)\
+		.set_trans(Tween.TRANS_SINE)\
+		.set_ease(Tween.EASE_OUT)
+
+	var tween_p_lag = create_tween()
+	tween_p_lag.tween_property(player_hp_bar_lag, "value", player_hp, 1.8)\
+		.set_trans(Tween.TRANS_SINE)\
+		.set_ease(Tween.EASE_IN)
+
+	# ================= ENEMY =================
+	enemy_hp_bar.max_value = enemy_max_hp
+	enemy_hp_lag.max_value = enemy_max_hp
+
+	var tween_e = create_tween()
+	tween_e.tween_property(enemy_hp_bar, "value", enemy_hp, 0.6)\
+		.set_trans(Tween.TRANS_SINE)\
+		.set_ease(Tween.EASE_OUT)
+
+	var tween_e_lag = create_tween()
+	tween_e_lag.tween_property(enemy_hp_lag, "value", enemy_hp, 2.0)\
+		.set_trans(Tween.TRANS_SINE)\
+		.set_ease(Tween.EASE_IN)
 
 # =========================
 # COMBATE
@@ -107,10 +141,10 @@ func _on_negotiate_pressed():
 		return
 	
 	if randf() < 0.5:
-		msg_label.text = "🤝 Sucesso! O youkai se acalma."
+		msg_label.text = "🤝 Sucesso!"
 		end_battle(true)
 	else:
-		msg_label.text = "😠 Falhou! Ele ataca."
+		msg_label.text = "😠 Falhou!"
 		player_turn = false
 		await get_tree().create_timer(1.0).timeout
 		enemy_turn()
@@ -132,7 +166,7 @@ func _on_flee_pressed():
 		return
 	
 	if randf() < 0.5:
-		msg_label.text = "🏃 Fugiu com sucesso!"
+		msg_label.text = "🏃 Fugiu!"
 		end_battle(false)
 	else:
 		msg_label.text = "😫 Falha!"
@@ -157,7 +191,7 @@ func end_battle(_victory):
 	queue_free()
 
 func disable_buttons():
-	if btn_attack: btn_attack.disabled = true
-	if btn_negotiate: btn_negotiate.disabled = true
-	if btn_items: btn_items.disabled = true
-	if btn_flee: btn_flee.disabled = true
+	btn_attack.disabled = true
+	btn_negotiate.disabled = true
+	btn_items.disabled = true
+	btn_flee.disabled = true
