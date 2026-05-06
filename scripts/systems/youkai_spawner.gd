@@ -29,17 +29,48 @@ func _ready():
 	spawn_ghosts()
 
 # =========================
-# CALCULAR TAMANHO DO MAPA
+# SPAWN
+# =========================
+
+func spawn_ghosts():
+	if ghost_scene == null:
+		print("❌ ERRO: ghost_scene está NULL")
+		return
+
+	spawned_positions.clear()
+
+	for i in spawn_count:
+		var ghost = ghost_scene.instantiate()
+
+		var pos = get_valid_position()
+		ghost.position = pos
+
+		# 🔥 PEGA YOUKAI
+		var youkai = YoukaiManager.get_random()
+
+		if youkai == null:
+			push_error("❌ Nenhum Youkai retornado pelo Manager!")
+			return
+
+		# 🔥 ATRIBUI NO GHOST
+		ghost.youkai_data = youkai
+
+		add_child(ghost)
+
+		# DEBUG
+		print("👻 Ghost spawnado:", youkai.name, "em", pos)
+
+# =========================
+# CALCULAR MAPA
 # =========================
 
 func calculate_map_bounds():
 	var floor_node = get_node(floor_path)
 
-	# 🔥 procura em TODA a árvore
 	var mesh_instance = floor_node.find_child("MeshInstance3D", true, false)
 
 	if mesh_instance == null:
-		push_error("❌ MeshInstance3D não encontrado em lugar nenhum!")
+		push_error("❌ MeshInstance3D não encontrado!")
 		return
 
 	var mesh = mesh_instance.mesh
@@ -59,34 +90,6 @@ func calculate_map_bounds():
 	print("📍 Limites do mapa:")
 	print("Min:", map_min)
 	print("Max:", map_max)
-# =========================
-# SPAWN DOS GHOSTS
-# =========================
-
-func spawn_ghosts():
-	if ghost_scene == null:
-		print("❌ ERRO: ghost_scene está NULL")
-		return
-
-	spawned_positions.clear()
-
-	for i in spawn_count:
-		var ghost = ghost_scene.instantiate()
-
-		var pos = get_valid_position()
-		ghost.position = pos
-
-		# 🔥 ATRIBUI YOUKAI AO GHOST
-		var youkai = YoukaiManager.get_random_youkai()
-		ghost.youkai_data = youkai
-
-		add_child(ghost)
-
-		# Debug
-		if youkai != null:
-			print("👻 Ghost spawnado:", youkai.name, "em", pos)
-		else:
-			print("👻 Ghost spawnado sem Youkai em", pos)
 
 # =========================
 # POSIÇÃO VÁLIDA
@@ -108,7 +111,7 @@ func get_valid_position() -> Vector3:
 
 		attempts += 1
 
-	print("⚠ Falha ao achar posição ideal, usando fallback")
+	print("⚠ fallback de posição usado")
 
 	return Vector3(
 		randf_range(map_min.x, map_max.x),
@@ -121,7 +124,7 @@ func get_valid_position() -> Vector3:
 # =========================
 
 func is_position_valid(pos: Vector3) -> bool:
-	for existing_pos in spawned_positions:
-		if pos.distance_to(existing_pos) < min_distance:
+	for p in spawned_positions:
+		if pos.distance_to(p) < min_distance:
 			return false
 	return true
