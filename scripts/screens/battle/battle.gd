@@ -86,7 +86,7 @@ func update_ui():
 		.set_ease(Tween.EASE_OUT)
 
 	var tween_p_lag = create_tween()
-	tween_p_lag.tween_property(player_hp_bar_lag, "value", player_hp, 2.0)\
+	tween_p_lag.tween_property(player_hp_bar_lag, "value", player_hp, 1.0)\
 		.set_trans(Tween.TRANS_SINE)\
 		.set_ease(Tween.EASE_IN)
 
@@ -100,7 +100,7 @@ func update_ui():
 		.set_ease(Tween.EASE_OUT)
 
 	var tween_e_lag = create_tween()
-	tween_e_lag.tween_property(enemy_hp_lag, "value", enemy_hp, 2.0)\
+	tween_e_lag.tween_property(enemy_hp_lag, "value", enemy_hp, 0.8)\
 		.set_trans(Tween.TRANS_SINE)\
 		.set_ease(Tween.EASE_IN)
 
