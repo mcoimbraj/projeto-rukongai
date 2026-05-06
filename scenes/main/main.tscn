@@ -29,10 +29,10 @@ ghost_scene = ExtResource("1_hyk8p")
 spawn_count = 6
 floor_path = NodePath("../StaticBody3D")
 
-[node name="WorldEnvironment" type="WorldEnvironment" parent="." unique_id=243996573]
-environment = SubResource("Environment_hyk8p")
-
 [node name="Player" parent="." unique_id=1271632815 groups=["player"] instance=ExtResource("2_iuonh")]
 
 [node name="DirectionalLight3D" type="DirectionalLight3D" parent="Player" unique_id=1643757863]
 sky_mode = 1
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="Player" unique_id=243996573]
+environment = SubResource("Environment_hyk8p")
