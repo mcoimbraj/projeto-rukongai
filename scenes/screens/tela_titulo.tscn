@@ -21,7 +21,7 @@ corner_radius_bottom_left = 10
 
 [sub_resource type="Theme" id="Theme_alfu1"]
 default_font = ExtResource("4_dw1oj")
-default_font_size = 40
+default_font_size = 55
 Button/styles/disabled = null
 Button/styles/hover = ExtResource("2_kp1np")
 Button/styles/normal = ExtResource("2_kp1np")
@@ -104,7 +104,7 @@ text = "流 魂 街"
 horizontal_alignment = 1
 
 [node name="botoes" type="VBoxContainer" parent="CenterContainer/CenterContainer/VBoxContainer" unique_id=1174828579]
-custom_minimum_size = Vector2(350, 350)
+custom_minimum_size = Vector2(450, 450)
 layout_mode = 2
 size_flags_horizontal = 4
 size_flags_vertical = 6
@@ -114,25 +114,25 @@ alignment = 1
 [node name="start" type="Button" parent="CenterContainer/CenterContainer/VBoxContainer/botoes" unique_id=1855675787]
 layout_mode = 2
 size_flags_vertical = 3
-theme_override_font_sizes/font_size = 40
+theme_override_font_sizes/font_size = 60
 text = "Começar"
 
 [node name="opcoes" type="Button" parent="CenterContainer/CenterContainer/VBoxContainer/botoes" unique_id=510502148]
 layout_mode = 2
 size_flags_vertical = 3
-theme_override_font_sizes/font_size = 40
+theme_override_font_sizes/font_size = 60
 text = "Opções"
 
 [node name="creditos" type="Button" parent="CenterContainer/CenterContainer/VBoxContainer/botoes" unique_id=174607398]
 layout_mode = 2
 size_flags_vertical = 3
-theme_override_font_sizes/font_size = 40
+theme_override_font_sizes/font_size = 60
 text = "Créditos"
 
 [node name="sair" type="Button" parent="CenterContainer/CenterContainer/VBoxContainer/botoes" unique_id=790429489]
 layout_mode = 2
 size_flags_vertical = 3
-theme_override_font_sizes/font_size = 40
+theme_override_font_sizes/font_size = 60
 text = "Sair"
 
 [connection signal="pressed" from="CenterContainer/CenterContainer/VBoxContainer/botoes/start" to="." method="_on_start_pressed"]

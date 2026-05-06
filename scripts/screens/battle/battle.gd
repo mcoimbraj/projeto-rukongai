@@ -8,8 +8,8 @@ var youkai
 var player_hp := 20
 var player_max_hp := 20
 
-var enemy_hp := 15
-var enemy_max_hp := 15
+var enemy_hp := 35
+var enemy_max_hp := 35
 
 var player_turn := true
 
@@ -45,6 +45,8 @@ func set_youkai(y):
 # INIT
 # =========================
 func _ready():
+
+	process_mode = Node.PROCESS_MODE_ALWAYS
 	# 🔴 Remove o "0%" das barras
 	player_hp_bar.show_percentage = false
 	player_hp_bar_lag.show_percentage = false
@@ -84,7 +86,7 @@ func update_ui():
 		.set_ease(Tween.EASE_OUT)
 
 	var tween_p_lag = create_tween()
-	tween_p_lag.tween_property(player_hp_bar_lag, "value", player_hp, 1.8)\
+	tween_p_lag.tween_property(player_hp_bar_lag, "value", player_hp, 2.0)\
 		.set_trans(Tween.TRANS_SINE)\
 		.set_ease(Tween.EASE_IN)
 

@@ -7,6 +7,7 @@
 [ext_resource type="FontFile" uid="uid://b7f8a3fhjmqes" path="res://scenes/screens/resource/fonts/aAnnyeongHaseyo.ttf" id="3_h1mvy"]
 [ext_resource type="Theme" uid="uid://ctom5at01itq4" path="res://tres/recursos/new_theme.tres" id="3_rxsww"]
 [ext_resource type="StyleBox" uid="uid://dgypm3n0lmgdu" path="res://tres/recursos/barra_real/barra_real_.tres" id="4_6muyq"]
+[ext_resource type="FontFile" uid="uid://bcodmdld5xkns" path="res://scenes/screens/resource/fonts/Rijaya Konoha.otf" id="5_6muyq"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_mwhox"]
 bg_color = Color(0, 0, 0, 1)
@@ -70,9 +71,9 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-theme_override_constants/margin_left = 10
-theme_override_constants/margin_top = 10
-theme_override_constants/margin_right = 10
+theme_override_constants/margin_left = 20
+theme_override_constants/margin_top = 65
+theme_override_constants/margin_right = 20
 theme_override_constants/margin_bottom = 10
 
 [node name="VBoxContainer" type="VBoxContainer" parent="CenterContainer" unique_id=977467320]
@@ -83,6 +84,7 @@ alignment = 1
 [node name="enemy" type="VBoxContainer" parent="CenterContainer/VBoxContainer" unique_id=2082389054]
 layout_mode = 2
 size_flags_vertical = 0
+theme_override_constants/separation = 25
 
 [node name="barras_juntas" type="Control" parent="CenterContainer/VBoxContainer/enemy" unique_id=2081315440]
 custom_minimum_size = Vector2(700, 30)
@@ -121,6 +123,7 @@ show_percentage = false
 
 [node name="e_label" type="Label" parent="CenterContainer/VBoxContainer/enemy" unique_id=375087935]
 layout_mode = 2
+theme_override_colors/font_shadow_color = Color(0.91, 0.91, 0.91, 0.47058824)
 theme_override_fonts/font = ExtResource("2_0pwen")
 theme_override_font_sizes/font_size = 60
 text = "Inimigo"
@@ -157,6 +160,7 @@ show_percentage = false
 
 [node name="msg_label" type="Label" parent="CenterContainer/VBoxContainer" unique_id=1245564149]
 layout_mode = 2
+theme_override_fonts/font = ExtResource("5_6muyq")
 theme_override_font_sizes/font_size = 40
 horizontal_alignment = 1
 

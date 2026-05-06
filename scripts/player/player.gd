@@ -6,22 +6,25 @@ extends CharacterBody3D
 @export var speed := 6.0
 @export var mouse_sensitivity := 0.002
 
-# Mobile (AJUSTADO)
-@export var mobile_sensitivity := 1.5
-@export var vertical_sensitivity := 0.45
-@export var camera_smooth := 6.0
-@export var max_look_speed := 1.0
+# Mobile camera
+@export var mobile_sensitivity := 1.8
+@export var vertical_sensitivity := 0.5
+@export var camera_smooth := 7.0
+@export var max_look_speed := 1.2
 
-# Step system 
-@export var step_threshold := 0.55
-@export var step_cooldown := 0.4
-@export var step_force := 13.0
-@export var friction := 8.5
+# Movement
+@export var step_force := 9.0
+@export var friction := 25.0
+@export var tilt_force := 0.8  
+
+# Step detection (REAL)
+@export var step_peak := 11
+@export var step_cooldown := 0.55
 
 # Sensor filtering
-@export var accel_smoothing := 0.2
+@export var accel_smoothing := 0.08
 @export var gyro_smoothing := 0.15
-@export var deadzone := 0.15
+@export var deadzone := 0.08
 
 # =========================
 # VARIÁVEIS
@@ -29,17 +32,14 @@ extends CharacterBody3D
 var rotation_x := 0.0
 var target_rotation_x := 0.0
 
-# Step
 var last_step_time := 0.0
-var prev_magnitude := 0.0
 
-# Sensor smoothing
 var smooth_accel := Vector3.ZERO
 var smooth_gyro := Vector3.ZERO
 
-# --- CORREÇÃO: gravidade estimada dinamicamente ---
+# Gravidade estimada
 var gravity_est := Vector3.ZERO
-const GRAVITY_ALPHA := 0.9   # passa‑baixa, 0.9 = reage rápido
+const GRAVITY_ALPHA := 0.9
 
 # =========================
 # READY
@@ -73,7 +73,7 @@ func _physics_process(delta):
 	else:
 		handle_pc(delta)
 
-	# freio natural
+	# Freio
 	velocity = velocity.move_toward(Vector3.ZERO, friction * delta)
 
 	move_and_slide()
@@ -97,24 +97,22 @@ func handle_pc(_delta):
 		velocity = direction.normalized() * speed
 
 # =========================
-# MOBILE (CORRIGIDO)
+# MOBILE
 # =========================
 func handle_mobile(delta):
 	var raw_accel = Input.get_accelerometer()
 	var raw_gyro = Input.get_gyroscope()
 
 	# =========================
-	# GRAVIDADE DINÂMICA (substitui a calibração antiga)
+	# GRAVIDADE DINÂMICA
 	# =========================
 	gravity_est = gravity_est.lerp(raw_accel, 1.0 - GRAVITY_ALPHA)
-	var linear_accel = raw_accel - gravity_est   # aceleração real do movimento
+	var linear_accel = raw_accel - gravity_est
 
 	# =========================
-	# FILTRO (aceleração linear)
+	# FILTROS (apenas para movimento suave)
 	# =========================
 	smooth_accel = smooth_accel.lerp(linear_accel, accel_smoothing)
-
-	# Giroscópio (velocidade angular)
 	smooth_gyro = smooth_gyro.lerp(raw_gyro, gyro_smoothing)
 
 	# =========================
@@ -136,15 +134,12 @@ func handle_mobile(delta):
 	var response_y = pow(abs(gyro_y), 1.5) * sign(gyro_y)
 
 	# =========================
-	# ROTAÇÃO HORIZONTAL (🔥 multiplicado por delta)
+	# ROTAÇÃO
 	# =========================
 	if abs(response_y) > 0.05:
 		rotate_y(response_y * mobile_sensitivity * delta)
 
-	# =========================
-	# ROTAÇÃO VERTICAL (🔥 multiplicado por delta)
-	# =========================
-	if abs(response_x) > 0.07:
+	if abs(response_x) > 0.05:
 		target_rotation_x -= response_x * vertical_sensitivity * delta
 		target_rotation_x = clamp(target_rotation_x, -1.2, 1.2)
 
@@ -152,10 +147,40 @@ func handle_mobile(delta):
 	$Camera3D.rotation.x = rotation_x
 
 	# =========================
-	# PASSO (usando aceleração linear suavizada)
+	# MOVIMENTO CONTÍNUO (inclinação)
 	# =========================
-	if detect_step(smooth_accel):
+	var tilt = smooth_accel.x  # eixo pode variar dependendo do aparelho
+
+	if abs(tilt) > 0.05:
+		var forward = -transform.basis.z
+		velocity += forward * tilt * tilt_force
+
+	# =========================
+	# PASSO REAL (acelerômetro cru)
+	# =========================
+	if detect_step_raw(raw_accel):
 		move_step()
+
+# =========================
+# DETECTAR PASSO REAL
+# =========================
+func detect_step_raw(raw_accel: Vector3) -> bool:
+	var magnitude = raw_accel.length()
+	var now = Time.get_ticks_msec() / 1000.0
+
+	if magnitude > step_peak and (now - last_step_time) > step_cooldown:
+		last_step_time = now
+		print("👣 PASSO REAL:", magnitude)
+		return true
+
+	return false
+
+# =========================
+# MOVIMENTO POR PASSO
+# =========================
+func move_step():
+	var forward = -transform.basis.z
+	velocity += forward * step_force
 
 # =========================
 # DEADZONE
@@ -166,43 +191,10 @@ func apply_deadzone(value: float) -> float:
 	return value
 
 # =========================
-# DETECTAR PASSO
-# =========================
-func detect_step(accel: Vector3) -> bool:
-	var magnitude = accel.length()
-	
-	# Ignora acelerações muito fracas
-	if magnitude < 0.20:  
-		return false
-	
-	var delta = magnitude - prev_magnitude
-	prev_magnitude = magnitude
-	
-	var now = Time.get_ticks_msec() / 1000.0
-	
-	# DEBUG: monitore os picos
-	if delta > 1.0:
-		print("Delta: ", delta)
-	
-	# Apenas importa se o delta for grande o suficiente e o cooldown permitir
-	if delta > step_threshold and (now - last_step_time) > step_cooldown:
-		last_step_time = now
-		print("👣 PASSO (delta: ", delta, ")")
-		return true
-	
-	return false
-# =========================
-# MOVIMENTO POR PASSO
-# =========================
-func move_step():
-	var forward = -transform.basis.z
-	velocity += forward * step_force
-
-# =========================
-# RECALIBRAR (agora reseta a estimativa da gravidade)
+# RECALIBRAR
 # =========================
 func recalibrate_sensors():
-	print("📱 Resetando estimativa da gravidade...")
-	gravity_est = Input.get_accelerometer()   # reinicia com leitura atual
+	print("📱 Recalibrando sensores...")
+	gravity_est = Input.get_accelerometer()
 	smooth_accel = Vector3.ZERO
 	smooth_gyro = Vector3.ZERO
