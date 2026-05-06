@@ -2,42 +2,109 @@ extends Resource
 class_name Youkai
 
 # =========================
+# CONSTANTES (AÇÕES)
+# =========================
+const FRASE_IDLE   := "idle"
+const FRASE_ATTACK := "attack"
+const FRASE_DAMAGE := "damage"
+const FRASE_DEATH  := "death"
+const FRASE_PUZZLE := "puzzle"
+
+# =========================
 # IDENTIFICAÇÃO
 # =========================
 @export var name: String
 @export var description: String
-@export var abilities: Array[String]
+@export var historia: String
+@export var historia_antiqua: String
 @export var natureza: String
 
 # =========================
-# STATUS DE COMBATE
+# FRASES
 # =========================
-@export var hp: int = 15
-@export var attack_damage_min: int = 1
-@export var attack_damage_max: int = 4
-@export var dodge_chance: float = 0.1
+@export var frases: Array[String] = []
+
+@export var frases_acao: Dictionary = {
+	FRASE_IDLE: [],
+	FRASE_ATTACK: [],
+	FRASE_DAMAGE: [],
+	FRASE_DEATH: [],
+	FRASE_PUZZLE: []
+}
 
 # =========================
-# COMPORTAMENTO NO MUNDO
+# COMBATE
 # =========================
-@export var behavior_type: String = "static"   # "static", "patrol", "sneaky", "chase"
-@export var move_speed: float = 2.0
-@export var detection_range: float = 5.0
-@export var sneak_speed: float = 1.0
+@export var hp: int
+@export var attack: int
+@export var defense: int
+@export var dodge_chance: float
+@export var crit_chance: float
+@export var crit_multiplier: float
+@export var fasmofobia: int
+
+#=======================
+# COMPORTAMENTOS
+#=======================
+
+@export var nature_type: String
+@export var move_speed: float
+@export var detection_range: float
+@export var sneak_speed: float
 
 # =========================
-# PUZZLE / NEGOCIAÇÃO
+# PUZZLE
 # =========================
-@export var puzzle_type: String = "charada"
-@export var puzzle_question: String = ""
-@export var puzzle_answer: String = ""
-@export var reward_item: String = ""
+@export var puzzle: PuzzleData
+
 
 # =========================
-# CONSTRUTOR (opcional, só para facilitar)
+# CONSTRUCTOR
 # =========================
-func _init(_name: String = "", _desc: String = "", _abilities: Array[String] = [], _natureza: String = ""):
-    name = _name
-    description = _desc
-    abilities = _abilities
-    natureza = _natureza
+func _init(
+	_name: String = "",
+	_desc: String = "",
+	_historia: String = "",
+	_historia_antiqua: String = "",
+	_natureza: String = "",
+	_frases: Array[String] = []
+):
+	name = _name
+	description = _desc
+	historia = _historia
+	historia_antiqua = _historia_antiqua
+	natureza = _natureza
+
+	frases = _frases.duplicate()
+
+	# garante estrutura segura dos dicionários
+	frases_acao = {
+		FRASE_IDLE: [],
+		FRASE_ATTACK: [],
+		FRASE_DAMAGE: [],
+		FRASE_DEATH: [],
+		FRASE_PUZZLE: []
+	}
+
+
+# =========================
+# FRASES SIMPLES
+# =========================
+func get_random_frase() -> String:
+	if frases.is_empty():
+		return ""
+	return frases.pick_random()
+
+
+# =========================
+# FRASES POR AÇÃO
+# =========================
+func get_frase_acao(tipo: String) -> String:
+	if not frases_acao.has(tipo):
+		return ""
+
+	var lista: Array = frases_acao[tipo]
+	if lista.is_empty():
+		return ""
+
+	return lista.pick_random()
