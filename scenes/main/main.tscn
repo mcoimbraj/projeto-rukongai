@@ -1,8 +1,8 @@
 [gd_scene format=3 uid="uid://8oufwumglpcs"]
 
-[ext_resource type="PackedScene" uid="uid://bbwc411qmrl4g" path="res://scenes/ghost/ghost.tscn" id="1_hyk8p"]
-[ext_resource type="Script" uid="uid://qig0dgbch8om" path="res://scripts/systems/youkai_spawner.gd" id="1_iuonh"]
-[ext_resource type="PackedScene" uid="uid://daiyam7bx6qt1" path="res://scenes/player/player.tscn" id="2_iuonh"]
+[ext_resource type="PackedScene" uid="uid://bbwc411qmrl4g" path="res://Scenes/ghost/ghost.tscn" id="1_hyk8p"]
+[ext_resource type="Script" uid="uid://qig0dgbch8om" path="res://Scritps/Sistemas/youkai_spawner.gd" id="1_iuonh"]
+[ext_resource type="PackedScene" uid="uid://daiyam7bx6qt1" path="res://Scenes/player/player.tscn" id="2_iuonh"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_vom5j"]
 

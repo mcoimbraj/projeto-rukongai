@@ -1,6 +1,6 @@
 [gd_scene format=3 uid="uid://daiyam7bx6qt1"]
 
-[ext_resource type="Script" uid="uid://b88rdcn2usxs0" path="res://scripts/player/player.gd" id="1_8afob"]
+[ext_resource type="Script" uid="uid://b88rdcn2usxs0" path="res://Scenes/player/player.gd" id="1_8afob"]
 
 [sub_resource type="Environment" id="Environment_x7p2l"]
 

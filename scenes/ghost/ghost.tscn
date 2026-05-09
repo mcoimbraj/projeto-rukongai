@@ -1,6 +1,6 @@
 [gd_scene format=3 uid="uid://bbwc411qmrl4g"]
 
-[ext_resource type="Script" uid="uid://qre4dh5bow1k" path="res://scripts/ghost/ghost.gd" id="1_gf5mu"]
+[ext_resource type="Script" uid="uid://qre4dh5bow1k" path="res://Scenes/ghost/ghost.gd" id="1_gf5mu"]
 
 [sub_resource type="SphereMesh" id="SphereMesh_jlo78"]
 

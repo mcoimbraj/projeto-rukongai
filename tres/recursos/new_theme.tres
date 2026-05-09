@@ -1,6 +1,0 @@
-[gd_resource type="Theme" format=3 uid="uid://ctom5at01itq4"]
-
-[ext_resource type="StyleBox" uid="uid://c53gw1tkut8m" path="res://tres/recursos/botao-ataque.tres" id="1_yy0p4"]
-
-[resource]
-Button/styles/normal = ExtResource("1_yy0p4")
