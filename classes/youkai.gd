@@ -58,6 +58,13 @@ const FRASE_PUZZLE := "puzzle"
 @export var puzzle: PuzzleData
 
 
+#============================
+# Itens dados ou dropados
+#===========================
+@export var item: Item
+
+
+
 # =========================
 # CONSTRUCTOR
 # =========================

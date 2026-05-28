@@ -1,0 +1,7 @@
+[gd_resource type="Resource" script_class="Youkai" format=3 uid="uid://c8nssx085njyw"]
+
+[ext_resource type="Script" uid="uid://cyt1tv5ofu107" path="res://Classes/youkai.gd" id="1_h7fdm"]
+
+[resource]
+script = ExtResource("1_h7fdm")
+metadata/_custom_type_script = "uid://cyt1tv5ofu107"

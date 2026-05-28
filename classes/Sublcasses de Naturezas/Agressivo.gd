@@ -1,0 +1,2 @@
+extends Naturezas
+class_name Agressivo
