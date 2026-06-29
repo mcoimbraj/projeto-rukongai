@@ -55,6 +55,11 @@ const GRAVITY_ALPHA := 0.98
 func _ready():
 	if OS.get_name() != "Android":
 		Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
+	else:
+		# CORREÇÃO: inicializa gravity_est com a leitura real do sensor.
+		# Sem isso, nos primeiros frames gravity_est é ZERO e linear_accel
+		# recebe a gravidade inteira (~9.8), voando o personagem para cima.
+		gravity_est = Input.get_accelerometer()
 
 	$Camera3D.current = true
 
@@ -184,16 +189,16 @@ func handle_mobile(delta):
 # INCLINAÇÃO (separada para evitar conflito com passo)
 # =========================
 func apply_tilt(_delta):
-	# NOTA: o eixo da inclinação pode variar por aparelho.
-	# Se o personagem andar para os lados em vez de frente/trás,
-	# troque smooth_accel.x por smooth_accel.y
-	var tilt = smooth_accel.x
+	# CORREÇÃO: usa a magnitude horizontal do acelerômetro (X e Z do sensor),
+	# ignorando Y completamente para evitar que a gravidade residual do sensor
+	# vaze para o movimento e voe o personagem para cima.
+	var accel_horizontal = Vector2(smooth_accel.x, smooth_accel.z)
+	var tilt = accel_horizontal.length() * sign(smooth_accel.x)
 
 	if abs(tilt) > 0.05:
 		var forward = -transform.basis.z
 		velocity.x += forward.x * tilt * tilt_force
 		velocity.z += forward.z * tilt * tilt_force
-		# Não afeta Y — gravidade é separada
 
 # =========================
 # DETECTAR PASSO REAL
