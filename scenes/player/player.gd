@@ -1,10 +1,9 @@
 extends CharacterBody3D
 
 # =========================
-# CONFIGURAÇÃO
+# CONFIG
 # =========================
-
-@export var speed := 4.0
+@export var speed := 6.0
 @export var mouse_sensitivity := 0.002
 
 # Mobile camera
@@ -14,36 +13,41 @@ extends CharacterBody3D
 @export var max_look_speed := 1.2
 
 # Movement
-@export var step_force := 6.0
-@export var friction := 18.0
-@export var base_speed := 1.8
+@export var step_force := 9.0
+@export var friction := 25.0
+@export var tilt_force := 0.8
 
-# Step detection
-@export var step_peak := 9.5
-@export var step_cooldown := 0.45
+# Step detection (REAL)
+# CORREÇÃO: aumentado de 11 para 14 para evitar falsos positivos
+# O acelerômetro em repouso já lê ~9.8 (gravidade), então 11 é muito sensível
+@export var step_peak := 14.0
+@export var step_cooldown := 0.55
 
 # Sensor filtering
 @export var accel_smoothing := 0.08
+# CORREÇÃO: alpha de gravidade mais alto = convergência mais rápida
+# Antes: 0.9 resultava em lerp com fator 0.1 (muito lento)
 @export var gyro_smoothing := 0.15
-@export var deadzone := 0.04
+@export var deadzone := 0.08
+
+# Gravidade do mundo (Godot usa -9.8 no eixo Y por padrão)
+var gravity: float = ProjectSettings.get_setting("physics/3d/default_gravity")
 
 # =========================
 # VARIÁVEIS
 # =========================
-
 var rotation_x := 0.0
 var target_rotation_x := 0.0
 
 var last_step_time := 0.0
-var last_magnitude := 0.0
-var rising := false
 
 var smooth_accel := Vector3.ZERO
 var smooth_gyro := Vector3.ZERO
 
-# Gravidade estimada
+# Gravidade estimada do sensor
 var gravity_est := Vector3.ZERO
-const GRAVITY_ALPHA := 0.8
+# CORREÇÃO: alpha mais alto = sensor aprende orientação mais rápido
+const GRAVITY_ALPHA := 0.98
 
 # =========================
 # READY
@@ -72,13 +76,23 @@ func _input(event):
 # LOOP
 # =========================
 func _physics_process(delta):
+	# CORREÇÃO: aplica gravidade do mundo antes de tudo
+	# Isso garante que o personagem caia quando não está no chão
+	if not is_on_floor():
+		velocity.y -= gravity * delta
+
 	if OS.get_name() == "Android":
 		handle_mobile(delta)
 	else:
 		handle_pc(delta)
 
-	# aplica atrito
-	velocity = velocity.move_toward(Vector3.ZERO, friction * delta)
+	# CORREÇÃO: fricção apenas nos eixos horizontais (X e Z)
+	# Antes, o move_toward zerava velocity.y também, brigando com a gravidade
+	var horizontal := Vector2(velocity.x, velocity.z)
+	horizontal = horizontal.move_toward(Vector2.ZERO, friction * delta)
+	velocity.x = horizontal.x
+	velocity.z = horizontal.y
+	# velocity.y NÃO é frenada aqui — gravidade e chão cuidam disso
 
 	move_and_slide()
 
@@ -98,7 +112,10 @@ func handle_pc(_delta):
 		direction += transform.basis.x
 
 	if direction != Vector3.ZERO:
-		velocity = direction.normalized() * speed
+		# Garante que o movimento horizontal não afete Y
+		var move = direction.normalized()
+		velocity.x = move.x * speed
+		velocity.z = move.z * speed
 
 # =========================
 # MOBILE
@@ -109,6 +126,8 @@ func handle_mobile(delta):
 
 	# =========================
 	# GRAVIDADE DINÂMICA
+	# CORREÇÃO: alpha mais alto (0.98) = converge mais rápido para a
+	# orientação real do aparelho, reduzindo "gravidade residual" em linear_accel
 	# =========================
 	gravity_est = gravity_est.lerp(raw_accel, 1.0 - GRAVITY_ALPHA)
 	var linear_accel = raw_accel - gravity_est
@@ -126,14 +145,20 @@ func handle_mobile(delta):
 	smooth_gyro.y = apply_deadzone(smooth_gyro.y)
 
 	# =========================
-	# CAMERA (GIROSCÓPIO)
+	# LIMITES
 	# =========================
 	var gyro_x = clamp(smooth_gyro.x, -max_look_speed, max_look_speed)
 	var gyro_y = clamp(smooth_gyro.y, -max_look_speed, max_look_speed)
 
+	# =========================
+	# CURVA DE RESPOSTA
+	# =========================
 	var response_x = pow(abs(gyro_x), 1.5) * sign(gyro_x)
 	var response_y = pow(abs(gyro_y), 1.5) * sign(gyro_y)
 
+	# =========================
+	# ROTAÇÃO
+	# =========================
 	if abs(response_y) > 0.05:
 		rotate_y(response_y * mobile_sensitivity * delta)
 
@@ -145,56 +170,53 @@ func handle_mobile(delta):
 	$Camera3D.rotation.x = rotation_x
 
 	# =========================
-	# MOVIMENTO BASE (sempre leve)
+	# PASSO REAL (acelerômetro cru)
+	# CORREÇÃO: só aplica passo OU inclinação por frame, nunca os dois
+	# para evitar impulsos duplos que lançam o personagem
 	# =========================
-	var forward = -transform.basis.z
-	velocity += forward * base_speed * delta
-
-	# =========================
-	# MOVIMENTO POR ACELERAÇÃO REAL (andar/correr)
-	# =========================
-	var forward_motion = smooth_accel.z
-
-	if abs(forward_motion) > 0.03:
-		velocity += forward * forward_motion * 4.0
-
-	# =========================
-	# PASSOS REAIS
-	# =========================
-	if detect_step(linear_accel):
+	if detect_step_raw(raw_accel):
 		move_step()
+	else:
+		# Movimento por inclinação só ocorre se NÃO foi detectado passo
+		apply_tilt(delta)
 
 # =========================
-# DETECÇÃO DE PASSO REAL (pico + queda)
+# INCLINAÇÃO (separada para evitar conflito com passo)
 # =========================
-func detect_step(accel: Vector3) -> bool:
-	var magnitude = accel.length()
+func apply_tilt(_delta):
+	# NOTA: o eixo da inclinação pode variar por aparelho.
+	# Se o personagem andar para os lados em vez de frente/trás,
+	# troque smooth_accel.x por smooth_accel.y
+	var tilt = smooth_accel.x
+
+	if abs(tilt) > 0.05:
+		var forward = -transform.basis.z
+		velocity.x += forward.x * tilt * tilt_force
+		velocity.z += forward.z * tilt * tilt_force
+		# Não afeta Y — gravidade é separada
+
+# =========================
+# DETECTAR PASSO REAL
+# =========================
+func detect_step_raw(raw_accel: Vector3) -> bool:
+	var magnitude = raw_accel.length()
 	var now = Time.get_ticks_msec() / 1000.0
 
-	var detected := false
+	if magnitude > step_peak and (now - last_step_time) > step_cooldown:
+		last_step_time = now
+		print("👣 PASSO REAL:", magnitude)
+		return true
 
-	if magnitude > last_magnitude:
-		rising = true
-	elif rising and magnitude < last_magnitude:
-		# pico detectado
-		if last_magnitude > step_peak and (now - last_step_time) > step_cooldown:
-			last_step_time = now
-			detected = true
-			print("👣 PASSO:", last_magnitude)
-
-		rising = false
-
-	last_magnitude = magnitude
-	return detected
+	return false
 
 # =========================
 # MOVIMENTO POR PASSO
 # =========================
 func move_step():
 	var forward = -transform.basis.z
-
-	var strength = clamp(last_magnitude / step_peak, 0.8, 1.5)
-	velocity += forward * step_force * strength
+	velocity.x += forward.x * step_force
+	velocity.z += forward.z * step_force
+	# Não afeta Y — evita que o personagem "pule" ao dar um passo
 
 # =========================
 # DEADZONE
